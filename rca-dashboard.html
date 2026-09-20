@@ -103,7 +103,7 @@ async function cargarDatos() {
     
     // ✅ MOSTRAR DIAGNÓSTICO
     debugPanel.textContent = '📡 Respuesta del servidor:\n\n' + JSON.stringify(d, null, 2);
-    debugPanel.style.display = 'block';
+    debugPanel.style.display = 'none';
     
     if (!d.success) {
       content.innerHTML = `<div class="empty" style="color:#ef4444">❌ Error: ${d.error}</div>`;
