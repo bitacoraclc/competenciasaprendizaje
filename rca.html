@@ -34,12 +34,12 @@ select{flex:1;min-width:100px}
 .instructions{font-size:12px;color:var(--muted);line-height:1.4;margin-bottom:var(--sp-md)}
 
 .stud-header{display:grid;grid-template-columns:0.5fr 1.5fr repeat(4,1fr);gap:var(--sp-xs);font-size:var(--header-size);color:var(--txt);text-align:center;padding:var(--sp-sm) 2px;border-bottom:1px solid rgba(71,85,105,0.5);margin-bottom:var(--sp-sm);font-weight:700}
-.stud-row{display:grid;grid-template-columns:0.5fr 1.5fr repeat(4,1fr);gap:var(--sp-xs);align-items:center;background:#151f2e;padding:var(--sp-sm);border-radius:var(--sp-md);margin-bottom:4px;border:1px solid rgba(255,255,255,0.06)}
+.stud-row{display:grid;grid-template-columns:0.5fr 1.5fr repeat(4,1fr);gap:var(--sp-xs);align-items:center;background:#151f2e;padding:var(--sp-sm);border-radius:var(--sp-md);margin-bottom:4px;border:1px solid rgba(255,255,255,0.06);transition:opacity 0.3s}
 .stud-row:nth-child(even){background:#182536}
+.stud-row.incompleto{opacity:0.4} /* ✅ Aquí se atenúan los no evaluados */
 .s-lista{text-align:center;font-size:12px;font-weight:700;color:#60a5fa}
 .s-name{font-size:var(--nombre-size);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px}
 
-/* ✅ SELECTS CON TRANSICIÓN DE COLOR */
 .comp-select{
   width:100%;height:32px;background:var(--input);color:var(--txt);
   border:1px solid rgba(71,85,105,0.6);border-radius:4px;
@@ -61,6 +61,10 @@ select{flex:1;min-width:100px}
 .legend-dot{width:8px;height:8px;border-radius:50%}
 .l4{background:#22c55e}.l3{background:#3b82f6}.l2{background:#facc15}.l1{background:#ef4444}
 
+.progreso-bar{background:var(--panel);padding:var(--sp-sm) var(--sp-lg);border-bottom:1px solid rgba(71,85,105,0.5);display:flex;justify-content:space-between;align-items:center;font-size:12px;flex-shrink:0}
+.progreso-texto{color:var(--muted)}
+.progreso-texto strong{color:var(--txt)}
+
 @media(max-width:500px){
   .stud-header,.stud-row{grid-template-columns:0.4fr 1.2fr repeat(4,1fr);font-size:10px}
   .comp-select{font-size:12px;height:30px}
@@ -71,20 +75,25 @@ select{flex:1;min-width:100px}
 </head>
 <body>
 <div class="top-bar"><h1>RCA - Registro de Competencias</h1></div>
-<div class="intro">Evalúa 4 competencias de aprendizaje en cada estudiante. Escala 1-4. Puedes usar esta app varias veces al día o por evaluación.</div>
+<div class="intro">Evalúa solo a los estudiantes presentes. Los que no toques no se enviarán.</div>
 
 <div class="header">
-  <select id="docente"><option value="">👨‍ Docente</option></select>
+  <select id="docente"><option value="">‍ Docente</option></select>
   <select id="curso"><option value="">📚 Curso</option></select>
   <input type="text" id="nombreEval" placeholder="📝 Nombre evaluación (ej: Diario 15-abr)">
   <button class="btn-refresh" id="btnRefresh" title="Recargar lista">🔄</button>
+</div>
+
+<div class="progreso-bar" id="progresoBar" style="display:none">
+  <span class="progreso-texto">Evaluados: <strong id="progresoCount">0/0</strong></span>
+  <span class="progreso-texto" id="progresoFaltan"></span>
 </div>
 
 <div class="main">
   <div class="section">
     <div class="sec-title">Instrucciones</div>
     <div class="instructions">
-      Para cada estudiante, selecciona el nivel de logro en cada competencia:<br><br>
+      Para cada estudiante presente, selecciona el nivel de logro en cada competencia:<br><br>
       <strong>1. Autoregulación:</strong> Orienta, mantiene o recupera su participación en la tarea.<br>
       <strong>2. Compromiso:</strong> Realiza las acciones necesarias para avanzar en la actividad.<br>
       <strong>3. Participación:</strong> Regula su participación de acuerdo con el propósito de la actividad.<br>
@@ -105,11 +114,11 @@ select{flex:1;min-width:100px}
     <div id="emptyMsg" class="empty">Selecciona docente, curso e ingresa nombre de evaluación</div>
   </div>
 </div>
-<div class="footer"><button class="btn-send" id="btnSend" disabled>📤 ENVIAR EVALUACIÓN</button></div>
+<div class="footer"><button class="btn-send" id="btnSend" disabled>📤 ENVIAR EVALUADOS</button></div>
 <div id="toast"></div>
 
 <script>
-const WEBHOOK = "https://script.google.com/macros/s/AKfycbwx6k9mYkO2H2sQDIgoRKFNhUhc9_ny8YjoJv1X6cmX6sovrhMkQtZpRrbC6BtJUoHl2A/exec"; // ← REEMPLAZAR CON TU URL REAL
+const WEBHOOK = "https://script.google.com/macros/s/TU_NUEVA_URL_AQUI/exec"; // ← REEMPLAZAR CON TU URL REAL
 const KEY = "rca_pendientes";
 const CURSOS = ["3°A","3°B","3°C","4°A","4°B","4°C","5°A","5°B","5°C","6°A","6°B","6°C","7°A","7°B","7°C","8°A","8°B","8°C","I°A","I°B","I°C","II°A","II°B","II°C","III°A","III°B","III°C","IV°A","IV°B","IV°C"];
 
@@ -124,23 +133,19 @@ const toastEl = document.getElementById("toast");
 const studList = document.getElementById("studList");
 const emptyMsg = document.getElementById("emptyMsg");
 const btnRefresh = document.getElementById("btnRefresh");
+const progresoBar = document.getElementById("progresoBar");
+const progresoCount = document.getElementById("progresoCount");
+const progresoFaltan = document.getElementById("progresoFaltan");
 
 function toast(msg,cls){ toastEl.textContent=msg; toastEl.className=cls?cls+" show":"show"; setTimeout(()=>toastEl.className="",2500) }
 
-// ✅ FUNCIÓN PARA PINTAR EL SELECT SEGÚN EL VALOR
 function colorSelect(select) {
   const val = select.value;
-  if (val === '4') { 
-    select.style.backgroundColor = '#22c55e'; select.style.color = '#fff'; 
-  } else if (val === '3') { 
-    select.style.backgroundColor = '#3b82f6'; select.style.color = '#fff'; 
-  } else if (val === '2') { 
-    select.style.backgroundColor = '#facc15'; select.style.color = '#000'; /* Negro para contraste en amarillo */
-  } else if (val === '1') { 
-    select.style.backgroundColor = '#ef4444'; select.style.color = '#fff'; 
-  } else { 
-    select.style.backgroundColor = 'var(--input)'; select.style.color = 'var(--txt)'; 
-  }
+  if (val === '4') { select.style.backgroundColor = '#22c55e'; select.style.color = '#fff'; } 
+  else if (val === '3') { select.style.backgroundColor = '#3b82f6'; select.style.color = '#fff'; } 
+  else if (val === '2') { select.style.backgroundColor = '#facc15'; select.style.color = '#000'; } 
+  else if (val === '1') { select.style.backgroundColor = '#ef4444'; select.style.color = '#fff'; } 
+  else { select.style.backgroundColor = 'var(--input)'; select.style.color = 'var(--txt)'; }
 }
 
 function initCursos(){
@@ -171,6 +176,7 @@ cursoSel.addEventListener("change", async ()=>{
   cursoActual = cursoSel.value;
   evaluaciones = {};
   emptyMsg.classList.add("show"); studList.innerHTML = ""; btnSend.disabled = true;
+  progresoBar.style.display = 'none';
   
   try {
     if (navigator.onLine) {
@@ -191,7 +197,7 @@ cursoSel.addEventListener("change", async ()=>{
     if (guardado) {
       cache[cursoSel.value] = JSON.parse(guardado);
       renderList();
-      toast("📴 Usando respaldo", "warn"); return;
+      toast(" Usando respaldo", "warn"); return;
     }
     cache[cursoSel.value] = [];
     toast("⚠️ Sin datos", "warn");
@@ -211,11 +217,13 @@ function renderList() {
   const estudiantes = cache[cursoActual] || [];
   if (!estudiantes.length) { emptyMsg.classList.add("show"); studList.innerHTML = ""; return; }
   emptyMsg.classList.remove("show");
+  progresoBar.style.display = 'flex';
   
   studList.innerHTML = estudiantes.map(est => {
     const saved = evaluaciones[est.id] || {};
+    const completo = saved.autoregulacion && saved.compromiso && saved.participacion && saved.colaboracion;
     return `
-    <div class="stud-row">
+    <div class="stud-row ${completo?'':'incompleto'}" data-id="${est.id}">
       <span class="s-lista">${est.id}</span>
       <span class="s-name">${est.nombre}</span>
       ${['autoregulacion','compromiso','participacion','colaboracion'].map(comp => `
@@ -230,16 +238,46 @@ function renderList() {
     </div>`;
   }).join("");
   
-  // ✅ Aplicar colores iniciales por si hay datos precargados
   setTimeout(() => {
     document.querySelectorAll('.comp-select').forEach(sel => colorSelect(sel));
+    actualizarProgreso();
   }, 10);
 }
 
 function onSelect(id, nombre, comp, valor) {
   if (!evaluaciones[id]) evaluaciones[id] = { id, nombre };
-  evaluaciones[id][comp] = Number(valor);
+  if (valor === '') {
+    delete evaluaciones[id][comp];
+  } else {
+    evaluaciones[id][comp] = Number(valor);
+  }
+  actualizarProgreso();
   check();
+}
+
+function actualizarProgreso() {
+  const estudiantes = cache[cursoActual] || [];
+  if (!estudiantes.length) return;
+  
+  const completos = estudiantes.filter(est => {
+    const e = evaluaciones[est.id];
+    return e && e.autoregulacion && e.compromiso && e.participacion && e.colaboracion;
+  }).length;
+  
+  const faltan = estudiantes.length - completos;
+  progresoCount.textContent = `${completos}/${estudiantes.length}`;
+  progresoFaltan.textContent = faltan > 0 ? `Faltan por evaluar: ${faltan}` : '✅ Listo para enviar';
+  progresoFaltan.style.color = faltan > 0 ? '#facc15' : '#22c55e';
+  
+  estudiantes.forEach(est => {
+    const e = evaluaciones[est.id];
+    const completo = e && e.autoregulacion && e.compromiso && e.participacion && e.colaboracion;
+    const row = document.querySelector(`.stud-row[data-id="${est.id}"]`);
+    if (row) {
+      if (completo) row.classList.remove('incompleto');
+      else row.classList.add('incompleto');
+    }
+  });
 }
 
 function check() {
@@ -248,27 +286,45 @@ function check() {
   }
   const estudiantes = cache[cursoActual] || [];
   if (!estudiantes.length) { btnSend.disabled = true; return; }
-  const allComplete = estudiantes.every(est => {
+  
+  const completos = estudiantes.filter(est => {
     const e = evaluaciones[est.id];
     return e && e.autoregulacion && e.compromiso && e.participacion && e.colaboracion;
   });
-  btnSend.disabled = !allComplete;
+  btnSend.disabled = completos.length === 0;
 }
 
 btnSend.addEventListener("click", () => {
   if (btnSend.disabled) return;
   const estudiantes = cache[cursoActual] || [];
+  
+  // ✅ SOLO ENVIAR LOS QUE SÍ FUERON EVALUADOS COMPLETOS
+  const aEnviar = estudiantes.filter(est => {
+    const e = evaluaciones[est.id];
+    return e && e.autoregulacion && e.compromiso && e.participacion && e.colaboracion;
+  }).map(est => {
+    const e = evaluaciones[est.id];
+    return {
+      id: est.id,
+      nombre: est.nombre,
+      autoregulacion: e.autoregulacion,
+      compromiso: e.compromiso,
+      participacion: e.participacion,
+      colaboracion: e.colaboracion
+    };
+  });
+  
   const data = {
     timestamp: new Date().toISOString(),
     docente: docenteSel.value,
     curso: cursoActual,
     nombreEvaluacion: nombreEvalInput.value.trim(),
-    evaluaciones: estudiantes.map(est => evaluaciones[est.id]).filter(e => e)
+    evaluaciones: aEnviar
   };
   let cola = JSON.parse(localStorage.getItem(KEY) || "[]");
   cola.push(data);
   localStorage.setItem(KEY, JSON.stringify(cola));
-  toast("✅ Registrado. Sincronizando...", "ok");
+  toast(`✅ ${aEnviar.length} estudiante(s) enviado(s).`, "ok");
   setTimeout(reset, 800);
   if (navigator.onLine) sincronizar();
 });
@@ -280,6 +336,7 @@ function reset() {
   emptyMsg.textContent = "Selecciona docente, curso e ingresa nombre de evaluación";
   emptyMsg.classList.add("show");
   btnSend.disabled = true;
+  progresoBar.style.display = 'none';
 }
 
 async function sincronizar() {
