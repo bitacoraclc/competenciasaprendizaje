@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="theme-color" content="#0b1120">
+<title>RCA - Registro de Competencias</title>
+<style>
+:root{
+  --titulo-size:14px;--input-size:12px;--nombre-size:11px;
+  --header-size:11px;--btn-size:14px;--sec-title-size:13px;--toast-size:12px;
+  --bg:#0b1120;--panel:#1e293b;--input:#334155;--btn:#3b82f6;
+  --txt:#e2e8f0;--muted:#94a3b8;
+  --sp-xs:3px;--sp-sm:5px;--sp-md:8px;--sp-lg:13px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html,body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+
+.top-bar{display:flex;justify-content:center;align-items:center;padding:var(--sp-md) var(--sp-lg);background:var(--panel);border-bottom:1px solid rgba(71,85,105,0.5);flex-shrink:0}
+.top-bar h1{font-size:var(--titulo-size);font-weight:700;letter-spacing:1.2px;text-transform:uppercase}
+.intro{padding:var(--sp-md) var(--sp-lg);background:rgba(30,41,59,0.6);font-size:12px;color:var(--muted);line-height:1.4;border-bottom:1px solid rgba(71,85,105,0.3);flex-shrink:0}
+
+.header{padding:var(--sp-sm) var(--sp-lg);background:var(--panel);border-bottom:1px solid rgba(71,85,105,0.5);display:flex;gap:4px;flex-shrink:0;align-items:center;flex-wrap:wrap}
+select,input[type="text"]{height:36px;padding:0 10px;background:var(--input);color:var(--txt);border:1px solid rgba(71,85,105,0.6);border-radius:var(--sp-md);font-size:var(--input-size);appearance:none}
+select{flex:1;min-width:100px}
+#docente{flex:0 0 30%}
+#curso{flex:0 0 25%}
+#nombreEval{flex:1;min-width:120px}
+.btn-refresh{background:#475569;border:none;border-radius:6px;color:#fff;font-size:14px;height:36px;width:36px;cursor:pointer;opacity:0.9}
+
+.main{flex:1;overflow-y:auto;padding:var(--sp-md) var(--sp-lg);display:flex;flex-direction:column;gap:var(--sp-md)}
+.section{background:var(--panel);border-radius:var(--sp-lg);padding:var(--sp-md);border:1px solid rgba(71,85,105,0.4)}
+.sec-title{font-size:var(--sec-title-size);font-weight:700;margin-bottom:var(--sp-sm);color:var(--txt)}
+.instructions{font-size:12px;color:var(--muted);line-height:1.4;margin-bottom:var(--sp-md)}
+
+.stud-header{display:grid;grid-template-columns:0.5fr 1.5fr repeat(4,1fr);gap:var(--sp-xs);font-size:var(--header-size);color:var(--txt);text-align:center;padding:var(--sp-sm) 2px;border-bottom:1px solid rgba(71,85,105,0.5);margin-bottom:var(--sp-sm);font-weight:700}
+.stud-row{display:grid;grid-template-columns:0.5fr 1.5fr repeat(4,1fr);gap:var(--sp-xs);align-items:center;background:#151f2e;padding:var(--sp-sm);border-radius:var(--sp-md);margin-bottom:4px;border:1px solid rgba(255,255,255,0.06)}
+.stud-row:nth-child(even){background:#182536}
+.s-lista{text-align:center;font-size:12px;font-weight:700;color:#60a5fa}
+.s-name{font-size:var(--nombre-size);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px}
+
+.comp-select{width:100%;height:32px;background:var(--input);color:var(--txt);border:1px solid rgba(71,85,105,0.6);border-radius:4px;font-size:11px;text-align:center;appearance:none}
+.comp-select option{background:var(--panel);color:var(--txt)}
+
+.empty{text-align:center;color:var(--muted);font-size:11px;padding:var(--sp-md) 0}
+.footer{padding:var(--sp-sm) var(--sp-lg) var(--sp-md);background:var(--panel);border-top:1px solid rgba(71,85,105,0.5);display:flex;align-items:center;flex-shrink:0}
+.btn-send{width:100%;height:44px;font-size:var(--btn-size);font-weight:700;background:var(--btn);color:#fff;border:none;border-radius:var(--sp-lg);text-transform:uppercase}
+.btn-send:disabled{background:#475569;color:#64748b}
+#toast{position:fixed;bottom:54px;left:12px;right:12px;background:rgba(15,23,42,0.95);color:var(--txt);text-align:center;padding:var(--sp-sm);border-radius:var(--sp-md);font-size:var(--toast-size);transform:translateY(20px);opacity:0;transition:0.2s;pointer-events:none;z-index:100}
+#toast.show{transform:translateY(0);opacity:1}
+#toast.ok{background:rgba(16,185,129,0.9)}#toast.warn{background:rgba(245,158,11,0.9)}#toast.error{background:rgba(239,68,68,0.9)}
+
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;font-size:10px;color:var(--muted)}
+.legend-item{display:flex;align-items:center;gap:4px}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+.l4{background:#22c55e}.l3{background:#3b82f6}.l2{background:#facc15}.l1{background:#ef4444}
+
+@media(max-width:500px){
+  .stud-header,.stud-row{grid-template-columns:0.4fr 1.2fr repeat(4,1fr);font-size:10px}
+  .comp-select{font-size:10px;height:28px}
+  .header{flex-direction:column}
+  #docente,#curso,#nombreEval{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="top-bar"><h1>RCA - Registro de Competencias</h1></div>
+<div class="intro">Evalúa 4 competencias de aprendizaje en cada estudiante. Escala 1-4. Puedes usar esta app varias veces al día o por evaluación.</div>
+
+<div class="header">
+  <select id="docente"><option value="">👨‍ Docente</option></select>
+  <select id="curso"><option value="">📚 Curso</option></select>
+  <input type="text" id="nombreEval" placeholder="📝 Nombre evaluación (ej: Diario 15-abr)">
+  <button class="btn-refresh" id="btnRefresh" title="Recargar lista">🔄</button>
+</div>
+
+<div class="main">
+  <div class="section">
+    <div class="sec-title">Instrucciones</div>
+    <div class="instructions">
+      Para cada estudiante, selecciona el nivel de logro en cada competencia:<br><br>
+      <strong>1. Autoregulación:</strong> Orienta, mantiene o recupera su participación en la tarea.<br>
+      <strong>2. Compromiso:</strong> Realiza las acciones necesarias para avanzar en la actividad.<br>
+      <strong>3. Participación:</strong> Regula su participación de acuerdo con el propósito de la actividad.<br>
+      <strong>4. Colaboración:</strong> Contribuye al aprendizaje propio y de otros cuando corresponde.
+    </div>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot l4"></span>4-Autónomo</div>
+      <div class="legend-item"><span class="legend-dot l3"></span>3-Logrado</div>
+      <div class="legend-item"><span class="legend-dot l2"></span>2-En desarrollo</div>
+      <div class="legend-item"><span class="legend-dot l1"></span>1-Requiere apoyo</div>
+    </div>
+  </div>
+  <div class="section">
+    <div class="stud-header">
+      <span>N°</span><span style="text-align:left">Nombre</span><span>Auto.</span><span>Comp.</span><span>Part.</span><span>Colab.</span>
+    </div>
+    <div id="studList"></div>
+    <div id="emptyMsg" class="empty">Selecciona docente, curso e ingresa nombre de evaluación</div>
+  </div>
+</div>
+<div class="footer"><button class="btn-send" id="btnSend" disabled>📤 ENVIAR EVALUACIÓN</button></div>
+<div id="toast"></div>
+
+<script>
+const WEBHOOK = "https://script.google.com/macros/s/AKfycbwx6k9mYkO2H2sQDIgoRKFNhUhc9_ny8YjoJv1X6cmX6sovrhMkQtZpRrbC6BtJUoHl2A/exec"; // ← REEMPLAZAR
+const KEY = "rca_pendientes";
+const CURSOS = ["3°A","3°B","3°C","4°A","4°B","4°C","5°A","5°B","5°C","6°A","6°B","6°C","7°A","7°B","7°C","8°A","8°B","8°C","I°A","I°B","I°C","II°A","II°B","II°C","III°A","III°B","III°C","IV°A","IV°B","IV°C"];
+
+let cache = {}, evaluaciones = {}, docenteActual = null, cursoActual = null;
+let FORZAR = false;
+
+const docenteSel = document.getElementById("docente");
+const cursoSel = document.getElementById("curso");
+const nombreEvalInput = document.getElementById("nombreEval");
+const btnSend = document.getElementById("btnSend");
+const toastEl = document.getElementById("toast");
+const studList = document.getElementById("studList");
+const emptyMsg = document.getElementById("emptyMsg");
+const btnRefresh = document.getElementById("btnRefresh");
+
+function toast(msg,cls){ toastEl.textContent=msg; toastEl.className=cls?cls+" show":"show"; setTimeout(()=>toastEl.className="",2500) }
+
+// Inicializar cursos
+function initCursos(){
+  while(cursoSel.options.length>1) cursoSel.remove(1);
+  CURSOS.forEach(c=>{ const o=document.createElement("option"); o.value=c; o.textContent=c; cursoSel.appendChild(o) });
+}
+initCursos();
+
+// Cargar docentes desde Sheet
+async function cargarDocentes(){
+  try {
+    const url = WEBHOOK + "?action=getDocentes&t=" + Date.now();
+    const r = await fetch(url, { cache: "no-store" });
+    const d = await r.json();
+    if (d.success && d.docentes?.length) {
+      while(docenteSel.options.length>1) docenteSel.remove(1);
+      d.docentes.forEach(n => {
+        const o = document.createElement("option");
+        o.value = n; o.textContent = n;
+        docenteSel.appendChild(o);
+      });
+    }
+  } catch(e) { console.warn('Docentes no cargados', e); }
+}
+cargarDocentes();
+
+// Cambio de curso → cargar estudiantes
+cursoSel.addEventListener("change", async ()=>{
+  if(!cursoSel.value || !docenteSel.value) return;
+  cursoActual = cursoSel.value;
+  evaluaciones = {};
+  emptyMsg.classList.add("show"); studList.innerHTML = ""; btnSend.disabled = true;
+  
+  try {
+    if (navigator.onLine) {
+      const url = WEBHOOK + "?action=getEstudiantes&curso=" + encodeURIComponent(cursoSel.value) + "&t=" + Date.now();
+      const r = await fetch(url, { cache: "no-store" });
+      const d = await r.json();
+      if (d.success && d.estudiantes?.length) {
+        cache[cursoSel.value] = d.estudiantes.map(e => ({ id: e.id, nombre: String(e.nombre).trim() }));
+        localStorage.setItem("rca_lista_" + cursoSel.value, JSON.stringify(cache[cursoSel.value]));
+        renderList();
+        toast(FORZAR ? "🔄 Actualizado" : "✅ Lista cargada", "ok");
+        FORZAR = false; return;
+      }
+    }
+    throw 1;
+  } catch {
+    const guardado = localStorage.getItem("rca_lista_" + cursoSel.value);
+    if (guardado) {
+      cache[cursoSel.value] = JSON.parse(guardado);
+      renderList();
+      toast(" Usando respaldo", "warn"); return;
+    }
+    cache[cursoSel.value] = [];
+    toast("⚠️ Sin datos", "warn");
+  }
+});
+
+docenteSel.addEventListener("change", check);
+nombreEvalInput.addEventListener("input", check);
+
+btnRefresh.addEventListener("click", ()=>{
+  if (!cursoSel.value || !docenteSel.value) { toast("Selecciona docente y curso", "warn"); return; }
+  FORZAR = true;
+  cursoSel.dispatchEvent(new Event("change"));
+});
+
+function renderList() {
+  const estudiantes = cache[cursoActual] || [];
+  if (!estudiantes.length) { emptyMsg.classList.add("show"); studList.innerHTML = ""; return; }
+  emptyMsg.classList.remove("show");
+  
+  studList.innerHTML = estudiantes.map(est => {
+    const saved = evaluaciones[est.id] || {};
+    return `
+    <div class="stud-row">
+      <span class="s-lista">${est.id}</span>
+      <span class="s-name">${est.nombre}</span>
+      ${['autoregulacion','compromiso','participacion','colaboracion'].map(comp => `
+        <select class="comp-select" data-id="${est.id}" data-comp="${comp}" onchange="onSelect(${est.id},'${est.nombre.replace(/'/g,"\\'")}','${comp}',this.value)">
+          <option value="">-</option>
+          <option value="4" ${saved[comp]==4?'selected':''}>4</option>
+          <option value="3" ${saved[comp]==3?'selected':''}>3</option>
+          <option value="2" ${saved[comp]==2?'selected':''}>2</option>
+          <option value="1" ${saved[comp]==1?'selected':''}>1</option>
+        </select>
+      `).join('')}
+    </div>`;
+  }).join("");
+}
+
+function onSelect(id, nombre, comp, valor) {
+  if (!evaluaciones[id]) evaluaciones[id] = { id, nombre };
+  evaluaciones[id][comp] = Number(valor);
+  check();
+}
+
+function check() {
+  if (!docenteSel.value || !cursoSel.value || !nombreEvalInput.value.trim()) {
+    btnSend.disabled = true; return;
+  }
+  const estudiantes = cache[cursoActual] || [];
+  if (!estudiantes.length) { btnSend.disabled = true; return; }
+  const allComplete = estudiantes.every(est => {
+    const e = evaluaciones[est.id];
+    return e && e.autoregulacion && e.compromiso && e.participacion && e.colaboracion;
+  });
+  btnSend.disabled = !allComplete;
+}
+
+btnSend.addEventListener("click", () => {
+  if (btnSend.disabled) return;
+  const estudiantes = cache[cursoActual] || [];
+  const data = {
+    timestamp: new Date().toISOString(),
+    docente: docenteSel.value,
+    curso: cursoActual,
+    nombreEvaluacion: nombreEvalInput.value.trim(),
+    evaluaciones: estudiantes.map(est => evaluaciones[est.id]).filter(e => e)
+  };
+  let cola = JSON.parse(localStorage.getItem(KEY) || "[]");
+  cola.push(data);
+  localStorage.setItem(KEY, JSON.stringify(cola));
+  toast("✅ Registrado. Sincronizando...", "ok");
+  setTimeout(reset, 800);
+  if (navigator.onLine) sincronizar();
+});
+
+function reset() {
+  evaluaciones = {};
+  nombreEvalInput.value = "";
+  studList.innerHTML = "";
+  emptyMsg.textContent = "Selecciona docente, curso e ingresa nombre de evaluación";
+  emptyMsg.classList.add("show");
+  btnSend.disabled = true;
+}
+
+async function sincronizar() {
+  let cola = JSON.parse(localStorage.getItem(KEY) || "[]");
+  if (!cola.length) return;
+  const ok = [];
+  for (let i = 0; i < cola.length; i++) {
+    try {
+      const res = await fetch(WEBHOOK, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ data: JSON.stringify(cola[i]) })
+      });
+      if (res.ok) ok.push(i);
+    } catch {}
+  }
+  if (ok.length) {
+    cola = cola.filter((_, idx) => !ok.includes(idx));
+    localStorage.setItem(KEY, JSON.stringify(cola));
+  }
+}
+
+window.addEventListener("online", () => { toast("🌐 Conexión. Sincronizando...", "ok"); sincronizar(); });
+if (navigator.onLine) sincronizar();
+</script>
+</body>
+</html>

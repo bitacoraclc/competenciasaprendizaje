@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#0b1120">
+<title>RCA Dashboard - Devolución Docente</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0b1120;--panel:#1e293b;--input:#334155;--btn:#3b82f6;
+  --txt:#e2e8f0;--muted:#94a3b8;--border:#475569;
+  --sp-sm:8px;--sp-md:12px;--sp-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding:var(--sp-md)}
+
+.top-bar{display:flex;justify-content:center;align-items:center;padding:var(--sp-md);background:var(--panel);border-radius:10px;margin-bottom:var(--sp-md);border:1px solid rgba(71,85,105,0.5)}
+.top-bar h1{font-size:16px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase}
+
+.filters{background:var(--panel);padding:var(--sp-md);border-radius:10px;margin-bottom:var(--sp-md);display:flex;gap:var(--sp-sm);flex-wrap:wrap;border:1px solid rgba(71,85,105,0.5)}
+.filters select,.filters button{height:38px;padding:0 12px;background:var(--input);color:var(--txt);border:1px solid var(--border);border-radius:6px;font-size:13px}
+.filters select{flex:1;min-width:120px}
+.filters button{background:var(--btn);border:none;cursor:pointer;font-weight:600}
+.filters button:hover{opacity:0.9}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:var(--sp-sm);margin-bottom:var(--sp-md)}
+.stat-card{background:var(--panel);padding:var(--sp-md);border-radius:10px;text-align:center;border:1px solid rgba(71,85,105,0.5)}
+.stat-card .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+.stat-card .value{font-size:24px;font-weight:700;margin-top:4px}
+.stat-card .value.green{color:#22c55e}.stat-card .value.blue{color:#3b82f6}.stat-card .value.yellow{color:#facc15}.stat-card .value.red{color:#ef4444}
+
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-md);margin-bottom:var(--sp-md)}
+.chart-box{background:var(--panel);padding:var(--sp-md);border-radius:10px;border:1px solid rgba(71,85,105,0.5)}
+.chart-box h3{font-size:13px;margin-bottom:var(--sp-sm);color:var(--muted)}
+.chart-container{position:relative;height:280px}
+
+.table-section{background:var(--panel);padding:var(--sp-md);border-radius:10px;border:1px solid rgba(71,85,105,0.5);overflow-x:auto}
+.table-section h3{font-size:13px;margin-bottom:var(--sp-sm);color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid rgba(71,85,105,0.3)}
+th{background:rgba(15,23,42,0.5);font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase}
+tr:hover{background:rgba(59,130,246,0.05)}
+.nota{font-weight:700;font-size:14px}
+.nota-alta{color:#22c55e}.nota-media{color:#facc15}.nota-baja{color:#ef4444}
+
+.empty{text-align:center;color:var(--muted);padding:40px;font-size:13px}
+@media(max-width:768px){.charts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top-bar"><h1>📊 RCA Dashboard - Devolución Docente</h1></div>
+
+<div class="filters">
+  <select id="docente"><option value="">👨‍ Docente</option></select>
+  <select id="curso"><option value="">📚 Curso</option></select>
+  <button id="btnCargar">🔍 Cargar datos</button>
+  <button id="btnExportar" style="background:#22c55e">📥 Exportar CSV</button>
+</div>
+
+<div id="content">
+  <div class="empty">Selecciona docente y curso, luego haz clic en "Cargar datos"</div>
+</div>
+
+<script>
+const WEBHOOK = "https://script.google.com/macros/s/AKfycbwx6k9mYkO2H2sQDIgoRKFNhUhc9_ny8YjoJv1X6cmX6sovrhMkQtZpRrbC6BtJUoHl2A/exec"; // ← REEMPLAZAR
+const CURSOS = ["3°A","3°B","3°C","4°A","4°B","4°C","5°A","5°B","5°C","6°A","6°B","6°C","7°A","7°B","7°C","8°A","8°B","8°C","I°A","I°B","I°C","II°A","II°B","II°C","III°A","III°B","III°C","IV°A","IV°B","IV°C"];
+
+const docenteSel = document.getElementById("docente");
+const cursoSel = document.getElementById("curso");
+const btnCargar = document.getElementById("btnCargar");
+const btnExportar = document.getElementById("btnExportar");
+const content = document.getElementById("content");
+
+let currentData = null;
+let charts = [];
+
+// Cargar docentes
+async function cargarDocentes() {
+  try {
+    const r = await fetch(WEBHOOK + "?action=getDocentes&t=" + Date.now());
+    const d = await r.json();
+    if (d.success && d.docentes?.length) {
+      d.docentes.forEach(n => {
+        const o = document.createElement("option");
+        o.value = n; o.textContent = n;
+        docenteSel.appendChild(o);
+      });
+    }
+  } catch(e) { console.warn(e); }
+}
+cargarDocentes();
+
+// Cargar cursos
+CURSOS.forEach(c => {
+  const o = document.createElement("option");
+  o.value = c; o.textContent = c;
+  cursoSel.appendChild(o);
+});
+
+btnCargar.addEventListener("click", cargarDatos);
+
+async function cargarDatos() {
+  const docente = docenteSel.value;
+  const curso = cursoSel.value;
+  if (!docente || !curso) { alert("Selecciona docente y curso"); return; }
+  
+  content.innerHTML = '<div class="empty">Cargando datos...</div>';
+  charts.forEach(c => c.destroy()); charts = [];
+  
+  try {
+    const url = WEBHOOK + `?action=getRCA&docente=${encodeURIComponent(docente)}&curso=${encodeURIComponent(curso)}&t=${Date.now()}`;
+    const r = await fetch(url, { cache: "no-store" });
+    const d = await r.json();
+    
+    if (!d.success) throw new Error(d.error);
+    if (!d.estudiantes || Object.keys(d.estudiantes).length === 0) {
+      content.innerHTML = '<div class="empty">Sin evaluaciones registradas para este docente y curso</div>';
+      currentData = null;
+      return;
+    }
+    
+    currentData = d;
+    renderDashboard(d);
+  } catch(err) {
+    content.innerHTML = `<div class="empty" style="color:#ef4444">Error: ${err.message}</div>`;
+  }
+}
+
+function renderDashboard(data) {
+  const estudiantes = Object.values(data.estudiantes);
+  const competencias = ['autoregulacion', 'compromiso', 'participacion', 'colaboracion'];
+  const compLabels = { autoregulacion: 'Autoregulación', compromiso: 'Compromiso', participacion: 'Participación', colaboracion: 'Colaboración' };
+  
+  // Calcular promedios por estudiante
+  const stats = estudiantes.map(est => {
+    const evals = Object.values(est.evaluaciones);
+    const promedios = {};
+    competencias.forEach(c => {
+      const vals = evals.map(e => e[c]).filter(v => v > 0);
+      promedios[c] = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+    });
+    const promedioGeneral = competencias.reduce((a,c)=>a+promedios[c],0)/4;
+    const nota = 1 + (promedioGeneral - 1) * 2; // Conversión 1-4 → 1-7
+    
+    return {
+      id: Object.keys(data.estudiantes).find(k => data.estudiantes[k] === est),
+      nombre: est.nombre,
+      promedios,
+      promedioGeneral,
+      nota: Math.round(nota * 10) / 10,
+      numEvaluaciones: evals.length
+    };
+  }).sort((a,b) => a.nombre.localeCompare(b.nombre));
+  
+  // Promedios globales por competencia
+  const promGlobales = {};
+  competencias.forEach(c => {
+    const vals = stats.map(s => s.promedios[c]).filter(v => v > 0);
+    promGlobales[c] = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+  });
+  const promedioCurso = Object.values(promGlobales).reduce((a,b)=>a+b,0)/4;
+  
+  // HTML
+  let html = `
+    <div class="stats">
+      <div class="stat-card"><div class="label">Estudiantes</div><div class="value blue">${stats.length}</div></div>
+      <div class="stat-card"><div class="label">Evaluaciones</div><div class="value">${data.nombresEvaluaciones.length}</div></div>
+      <div class="stat-card"><div class="label">Promedio Curso</div><div class="value ${promedioCurso>=3?'green':promedioCurso>=2?'yellow':'red'}">${promedioCurso.toFixed(2)}</div></div>
+      <div class="stat-card"><div class="label">Nota Promedio (1-7)</div><div class="value ${promedioCurso>=3?'green':promedioCurso>=2?'yellow':'red'}">${(1+(promedioCurso-1)*2).toFixed(1)}</div></div>
+    </div>
+    
+    <div class="charts">
+      <div class="chart-box">
+        <h3>Promedio por Competencia (Curso)</h3>
+        <div class="chart-container"><canvas id="chartComp"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <h3>Distribución de Notas (1-7)</h3>
+        <div class="chart-container"><canvas id="chartNotas"></canvas></div>
+      </div>
+    </div>
+    
+    <div class="table-section">
+      <h3>Detalle por Estudiante</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th><th>Estudiante</th>
+            <th>Auto.</th><th>Comp.</th><th>Part.</th><th>Colab.</th>
+            <th>Prom.</th><th>Nota (1-7)</th><th>Evals</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${stats.map(s => `
+            <tr>
+              <td>${s.id}</td>
+              <td>${s.nombre}</td>
+              <td>${s.promedios.autoregulacion.toFixed(1)}</td>
+              <td>${s.promedios.compromiso.toFixed(1)}</td>
+              <td>${s.promedios.participacion.toFixed(1)}</td>
+              <td>${s.promedios.colaboracion.toFixed(1)}</td>
+              <td><strong>${s.promedioGeneral.toFixed(2)}</strong></td>
+              <td class="nota ${s.nota>=5?'nota-alta':s.nota>=4?'nota-media':'nota-baja'}">${s.nota.toFixed(1)}</td>
+              <td>${s.numEvaluaciones}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  content.innerHTML = html;
+  
+  // Gráfica 1: Promedio por competencia
+  const ctx1 = document.getElementById('chartComp').getContext('2d');
+  charts.push(new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: competencias.map(c => compLabels[c]),
+      datasets: [{
+        label: 'Promedio',
+        data: competencias.map(c => promGlobales[c]),
+        backgroundColor: ['#22c55e','#3b82f6','#facc15','#ef4444'],
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      scales: { y: { min: 0, max: 4, ticks: { stepSize: 1 } } },
+      plugins: { legend: { display: false } }
+    }
+  }));
+  
+  // Gráfica 2: Distribución de notas
+  const rangos = { '1.0-2.9': 0, '3.0-3.9': 0, '4.0-4.9': 0, '5.0-5.9': 0, '6.0-7.0': 0 };
+  stats.forEach(s => {
+    if (s.nota < 3) rangos['1.0-2.9']++;
+    else if (s.nota < 4) rangos['3.0-3.9']++;
+    else if (s.nota < 5) rangos['4.0-4.9']++;
+    else if (s.nota < 6) rangos['5.0-5.9']++;
+    else rangos['6.0-7.0']++;
+  });
+  const ctx2 = document.getElementById('chartNotas').getContext('2d');
+  charts.push(new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(rangos),
+      datasets: [{
+        data: Object.values(rangos),
+        backgroundColor: ['#ef4444','#f97316','#facc15','#3b82f6','#22c55e']
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false }
+  }));
+}
+
+// Exportar CSV
+btnExportar.addEventListener("click", () => {
+  if (!currentData) { alert("Primero carga datos"); return; }
+  const estudiantes = Object.values(currentData.estudiantes);
+  const competencias = ['autoregulacion', 'compromiso', 'participacion', 'colaboracion'];
+  const compLabels = { autoregulacion: 'Autoregulación', compromiso: 'Compromiso', participacion: 'Participación', colaboracion: 'Colaboración' };
+  
+  let csv = 'ID,Nombre,' + competencias.map(c => compLabels[c]).join(',') + ',Promedio,Nota(1-7),N°Evaluaciones\n';
+  estudiantes.forEach(est => {
+    const evals = Object.values(est.evaluaciones);
+    const proms = competencias.map(c => {
+      const vals = evals.map(e => e[c]).filter(v => v > 0);
+      return vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : '0';
+    });
+    const promG = proms.reduce((a,b)=>a+Number(b),0)/4;
+    const nota = (1 + (promG - 1) * 2).toFixed(1);
+    const id = Object.keys(currentData.estudiantes).find(k => currentData.estudiantes[k] === est);
+    csv += `${id},"${est.nombre}",${proms.join(',')},${promG.toFixed(2)},${nota},${evals.length}\n`;
+  });
+  
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `RCA_${docenteSel.value}_${cursoSel.value}_${Date.now()}.csv`;
+  a.click();
+});
+</script>
+</body>
+</html>
