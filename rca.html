@@ -39,8 +39,14 @@ select{flex:1;min-width:100px}
 .s-lista{text-align:center;font-size:12px;font-weight:700;color:#60a5fa}
 .s-name{font-size:var(--nombre-size);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px}
 
-.comp-select{width:100%;height:32px;background:var(--input);color:var(--txt);border:1px solid rgba(71,85,105,0.6);border-radius:4px;font-size:11px;text-align:center;appearance:none}
-.comp-select option{background:var(--panel);color:var(--txt)}
+/* ✅ SELECTS CON TRANSICIÓN DE COLOR */
+.comp-select{
+  width:100%;height:32px;background:var(--input);color:var(--txt);
+  border:1px solid rgba(71,85,105,0.6);border-radius:4px;
+  font-size:13px;font-weight:600;text-align:center;appearance:none;
+  transition: all 0.2s ease; cursor: pointer;
+}
+.comp-select option{background:var(--panel);color:var(--txt);font-weight:400}
 
 .empty{text-align:center;color:var(--muted);font-size:11px;padding:var(--sp-md) 0}
 .footer{padding:var(--sp-sm) var(--sp-lg) var(--sp-md);background:var(--panel);border-top:1px solid rgba(71,85,105,0.5);display:flex;align-items:center;flex-shrink:0}
@@ -57,7 +63,7 @@ select{flex:1;min-width:100px}
 
 @media(max-width:500px){
   .stud-header,.stud-row{grid-template-columns:0.4fr 1.2fr repeat(4,1fr);font-size:10px}
-  .comp-select{font-size:10px;height:28px}
+  .comp-select{font-size:12px;height:30px}
   .header{flex-direction:column}
   #docente,#curso,#nombreEval{width:100%}
 }
@@ -103,7 +109,7 @@ select{flex:1;min-width:100px}
 <div id="toast"></div>
 
 <script>
-const WEBHOOK = "https://script.google.com/macros/s/AKfycbwx6k9mYkO2H2sQDIgoRKFNhUhc9_ny8YjoJv1X6cmX6sovrhMkQtZpRrbC6BtJUoHl2A/exec"; // ← REEMPLAZAR
+const WEBHOOK = "https://script.google.com/macros/s/AKfycbwx6k9mYkO2H2sQDIgoRKFNhUhc9_ny8YjoJv1X6cmX6sovrhMkQtZpRrbC6BtJUoHl2A/exec"; // ← REEMPLAZAR CON TU URL REAL
 const KEY = "rca_pendientes";
 const CURSOS = ["3°A","3°B","3°C","4°A","4°B","4°C","5°A","5°B","5°C","6°A","6°B","6°C","7°A","7°B","7°C","8°A","8°B","8°C","I°A","I°B","I°C","II°A","II°B","II°C","III°A","III°B","III°C","IV°A","IV°B","IV°C"];
 
@@ -121,14 +127,28 @@ const btnRefresh = document.getElementById("btnRefresh");
 
 function toast(msg,cls){ toastEl.textContent=msg; toastEl.className=cls?cls+" show":"show"; setTimeout(()=>toastEl.className="",2500) }
 
-// Inicializar cursos
+// ✅ FUNCIÓN PARA PINTAR EL SELECT SEGÚN EL VALOR
+function colorSelect(select) {
+  const val = select.value;
+  if (val === '4') { 
+    select.style.backgroundColor = '#22c55e'; select.style.color = '#fff'; 
+  } else if (val === '3') { 
+    select.style.backgroundColor = '#3b82f6'; select.style.color = '#fff'; 
+  } else if (val === '2') { 
+    select.style.backgroundColor = '#facc15'; select.style.color = '#000'; /* Negro para contraste en amarillo */
+  } else if (val === '1') { 
+    select.style.backgroundColor = '#ef4444'; select.style.color = '#fff'; 
+  } else { 
+    select.style.backgroundColor = 'var(--input)'; select.style.color = 'var(--txt)'; 
+  }
+}
+
 function initCursos(){
   while(cursoSel.options.length>1) cursoSel.remove(1);
   CURSOS.forEach(c=>{ const o=document.createElement("option"); o.value=c; o.textContent=c; cursoSel.appendChild(o) });
 }
 initCursos();
 
-// Cargar docentes desde Sheet
 async function cargarDocentes(){
   try {
     const url = WEBHOOK + "?action=getDocentes&t=" + Date.now();
@@ -146,7 +166,6 @@ async function cargarDocentes(){
 }
 cargarDocentes();
 
-// Cambio de curso → cargar estudiantes
 cursoSel.addEventListener("change", async ()=>{
   if(!cursoSel.value || !docenteSel.value) return;
   cursoActual = cursoSel.value;
@@ -172,7 +191,7 @@ cursoSel.addEventListener("change", async ()=>{
     if (guardado) {
       cache[cursoSel.value] = JSON.parse(guardado);
       renderList();
-      toast(" Usando respaldo", "warn"); return;
+      toast("📴 Usando respaldo", "warn"); return;
     }
     cache[cursoSel.value] = [];
     toast("⚠️ Sin datos", "warn");
@@ -200,7 +219,7 @@ function renderList() {
       <span class="s-lista">${est.id}</span>
       <span class="s-name">${est.nombre}</span>
       ${['autoregulacion','compromiso','participacion','colaboracion'].map(comp => `
-        <select class="comp-select" data-id="${est.id}" data-comp="${comp}" onchange="onSelect(${est.id},'${est.nombre.replace(/'/g,"\\'")}','${comp}',this.value)">
+        <select class="comp-select" data-id="${est.id}" data-comp="${comp}" onchange="onSelect(${est.id},'${est.nombre.replace(/'/g,"\\'")}','${comp}',this.value); colorSelect(this)">
           <option value="">-</option>
           <option value="4" ${saved[comp]==4?'selected':''}>4</option>
           <option value="3" ${saved[comp]==3?'selected':''}>3</option>
@@ -210,6 +229,11 @@ function renderList() {
       `).join('')}
     </div>`;
   }).join("");
+  
+  // ✅ Aplicar colores iniciales por si hay datos precargados
+  setTimeout(() => {
+    document.querySelectorAll('.comp-select').forEach(sel => colorSelect(sel));
+  }, 10);
 }
 
 function onSelect(id, nombre, comp, valor) {
