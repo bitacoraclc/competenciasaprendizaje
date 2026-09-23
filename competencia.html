@@ -4,331 +4,157 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#0b1120">
-<title>Competencia Visual - Camino al Logro</title>
+<title>Competencia Visual</title>
 <style>
 :root {
-  --bg: #0b1120;
-  --panel: #1e293b;
-  --input: #334155;
-  --txt: #e2e8f0;
-  --muted: #94a3b8;
-  --border: #475569;
-  --btn: #3b82f6;
-  --success: #22c55e;
-  --danger: #ef4444;
-  --warning: #facc15;
-  --path: #475569;
-  --path-active: #60a5fa;
-  --sp-sm: 8px;
-  --sp-md: 12px;
-  --sp-lg: 16px;
-  --sp-xl: 24px;
+  --bg: #0f172a; --panel: #1e293b; --input: #334155; --txt: #f1f5f9;
+  --muted: #94a3b8; --border: #334155; --btn: #3b82f6;
+  --success: #22c55e; --danger: #ef4444; --warning: #facc15;
+  --path: #475569; --path-active: #60a5fa;
 }
-
 body.light-mode {
-  --bg: #f8fafc;
-  --panel: #ffffff;
-  --input: #e2e8f0;
-  --txt: #0f172a;
-  --muted: #64748b;
-  --border: #cbd5e1;
-  --path: #cbd5e1;
-  --path-active: #3b82f6;
+  --bg: #f8fafc; --panel: #ffffff; --input: #e2e8f0; --txt: #0f172a;
+  --muted: #64748b; --border: #cbd5e1; --path: #cbd5e1; --path-active: #3b82f6;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--txt);
-  min-height: 100vh;
-  transition: background 0.3s, color 0.3s;
-}
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--txt); height: 100vh; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s, color 0.3s; }
 
 /* Pantalla de inicio */
-#pantallaInicio {
-  max-width: 600px;
-  margin: 40px auto;
-  padding: var(--sp-xl);
-  background: var(--panel);
-  border-radius: 12px;
-  border: 1px solid var(--border);
-}
-#pantallaInicio h1 {
-  font-size: 24px;
-  margin-bottom: var(--sp-lg);
-  text-align: center;
-}
-.form-group { margin-bottom: var(--sp-md); }
-.form-group label {
-  display: block;
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 4px;
-}
-.form-group select, .form-group input {
-  width: 100%;
-  height: 40px;
-  padding: 0 12px;
-  background: var(--input);
-  color: var(--txt);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 14px;
-}
-.btn-primary {
-  width: 100%;
-  height: 44px;
-  background: var(--btn);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-top: var(--sp-md);
-}
+#pantallaInicio { max-width: 500px; margin: 10vh auto; padding: 32px; background: var(--panel); border-radius: 16px; border: 1px solid var(--border); text-align: center; }
+#pantallaInicio h1 { font-size: 22px; margin-bottom: 24px; }
+.form-group { margin-bottom: 16px; text-align: left; }
+.form-group label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+.form-group select, .form-group input { width: 100%; height: 44px; padding: 0 14px; background: var(--input); color: var(--txt); border: 1px solid var(--border); border-radius: 8px; font-size: 15px; }
+.btn-primary { width: 100%; height: 48px; background: var(--btn); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; }
 .btn-primary:hover { opacity: 0.9; }
 
 /* Pantalla principal */
 #pantallaPrincipal { display: none; height: 100vh; flex-direction: column; }
 #pantallaPrincipal.active { display: flex; }
 
-.header-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--sp-md) var(--sp-lg);
-  background: var(--panel);
-  border-bottom: 1px solid var(--border);
-}
-.header-bar h2 { font-size: 16px; }
-.header-bar .info { font-size: 13px; color: var(--muted); }
-.btn-small {
-  padding: 8px 14px;
-  background: var(--input);
-  color: var(--txt);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  margin-left: 8px;
-}
+.header-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: var(--panel); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.header-bar h2 { font-size: 18px; font-weight: 700; }
+.header-bar .info { font-size: 14px; color: var(--muted); margin-top: 2px; }
+.btn-small { padding: 8px 16px; background: var(--input); color: var(--txt); border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-left: 8px; }
 .btn-small:hover { opacity: 0.8; }
 .btn-danger { background: var(--danger); color: white; border: none; }
 
-/* Área de proyección */
+/* Área de proyección (2 columnas para ver todos) */
 #areaProyeccion {
   flex: 1;
-  padding: var(--sp-xl);
+  padding: 16px 24px;
   overflow-y: auto;
-}
-.fila-estudiante {
   display: grid;
-  grid-template-columns: 180px 1fr 60px;
-  align-items: center;
-  gap: var(--sp-md);
-  padding: var(--sp-md) 0;
-  border-bottom: 1px solid var(--border);
-}
-.nombre-estudiante {
-  font-size: 16px;
-  font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  grid-template-columns: 1fr 1fr; /* 2 columnas para aprovechar TV */
+  gap: 8px 32px;
+  align-content: start;
 }
 
-/* Camino visual */
-.camino {
+.fila-estudiante {
+  display: grid;
+  grid-template-columns: 160px 1fr 110px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--panel);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.nombre-estudiante { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Camino visual robusto */
+.camino-container {
   position: relative;
-  height: 60px;
+  height: 36px;
   display: flex;
   align-items: center;
 }
 .camino-linea {
   position: absolute;
-  left: 30px;
-  right: 30px;
+  left: 15px;
+  right: 15px;
   height: 2px;
   background: var(--path);
-  top: 50%;
-  transform: translateY(-50%);
 }
-.camino-puntos {
+.camino-marcas {
   position: absolute;
-  left: 30px;
-  right: 30px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 15px;
+  right: 15px;
+  height: 100%;
   display: flex;
   justify-content: space-between;
 }
-.camino-punto {
-  width: 4px;
-  height: 4px;
+.marca {
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--path);
+  margin-top: 15px;
+  transition: background 0.3s;
 }
-.camino-punto.activo {
-  background: var(--path-active);
-  box-shadow: 0 0 6px var(--path-active);
-}
+.marca.activo { background: var(--path-active); box-shadow: 0 0 6px var(--path-active); }
 
-.icono-extremo {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 24px;
-  z-index: 2;
-}
-.icono-alerta { left: 0; }
-.icono-meta { right: 0; }
+.icono-extremo { position: absolute; top: 50%; transform: translateY(-50%); font-size: 22px; z-index: 2; }
+.icono-alerta { left: -5px; }
+.icono-meta { right: -5px; }
 
 .personaje {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  font-size: 32px;
-  z-index: 3;
-  transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  font-size: 28px;
+  z-index: 10;
+  /* Fórmula robusta: 5% a 95% del ancho */
+  transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
 }
-
 .estrella {
   position: absolute;
-  right: -10px;
-  top: -15px;
-  font-size: 20px;
-  animation: aparecerEstrella 0.5s ease;
-  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.6));
-}
-@keyframes aparecerEstrella {
-  0% { transform: scale(0) rotate(0deg); opacity: 0; }
-  100% { transform: scale(1) rotate(360deg); opacity: 1; }
-}
-
-.resultado-cell {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-}
-.resultado-cell.meta-alcanzada { color: var(--warning); }
-
-/* Panel de control */
-#panelControl {
-  background: var(--panel);
-  border-top: 1px solid var(--border);
-  padding: var(--sp-md);
-  max-height: 40vh;
-  overflow-y: auto;
-}
-#panelControl h3 {
-  font-size: 14px;
-  margin-bottom: var(--sp-sm);
-  color: var(--muted);
-}
-.control-estudiante {
-  display: flex;
-  align-items: center;
-  gap: var(--sp-sm);
-  padding: 8px;
-  border-radius: 6px;
-  margin-bottom: 6px;
-  background: var(--input);
-}
-.control-estudiante .nombre {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 500;
-}
-.control-estudiante .posicion {
-  font-size: 12px;
-  color: var(--muted);
-  min-width: 60px;
-  text-align: center;
-}
-.btn-accion {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 6px;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
+  animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.8));
+}
+@keyframes pop { 0% { transform: translateX(-50%) scale(0); } 100% { transform: translateX(-50%) scale(1); } }
+
+/* Controles en la misma fila */
+.controles { display: flex; gap: 6px; justify-content: flex-end; }
+.btn-accion {
+  width: 32px; height: 32px; border: none; border-radius: 6px;
+  font-size: 16px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
   transition: transform 0.1s;
 }
-.btn-accion:active { transform: scale(0.95); }
+.btn-accion:active { transform: scale(0.9); }
 .btn-mas { background: var(--success); color: white; }
 .btn-menos { background: var(--danger); color: white; }
-.btn-deshacer { background: var(--warning); color: black; font-size: 14px; width: auto; padding: 0 10px; }
-
-.checkbox-rapido {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  accent-color: var(--btn);
-}
-
-.acciones-masivas {
-  display: flex;
-  gap: var(--sp-sm);
-  margin-bottom: var(--sp-md);
-  flex-wrap: wrap;
-}
-.btn-masivo {
-  flex: 1;
-  min-width: 120px;
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.btn-masivo.mas { background: var(--success); color: white; }
-.btn-masivo.menos { background: var(--danger); color: white; }
-.btn-masivo:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-deshacer { background: var(--warning); color: #000; font-size: 14px; width: 32px; }
+.btn-accion:disabled { opacity: 0.3; cursor: not-allowed; }
 
 /* Toast */
 #toast {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: var(--panel);
-  color: var(--txt);
-  padding: 12px 24px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  font-size: 14px;
-  opacity: 0;
-  transition: all 0.3s;
-  z-index: 1000;
-  pointer-events: none;
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: var(--panel); color: var(--txt); padding: 12px 24px; border-radius: 8px;
+  border: 1px solid var(--border); font-size: 15px; font-weight: 600;
+  opacity: 0; transition: all 0.3s; z-index: 1000; pointer-events: none;
 }
-#toast.show {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-}
-#toast.ok { border-color: var(--success); }
-#toast.error { border-color: var(--danger); }
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+#toast.ok { border-color: var(--success); color: var(--success); }
+#toast.error { border-color: var(--danger); color: var(--danger); }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .fila-estudiante {
-    grid-template-columns: 120px 1fr 40px;
-  }
-  .nombre-estudiante { font-size: 14px; }
-  .personaje { font-size: 24px; }
+@media (max-width: 900px) {
+  #areaProyeccion { grid-template-columns: 1fr; }
+  .fila-estudiante { grid-template-columns: 120px 1fr 100px; }
 }
 </style>
 </head>
 <body>
 
-<!-- Pantalla de inicio -->
 <div id="pantallaInicio">
-  <h1> Competencia Visual</h1>
+  <h1>🧭 Competencia Visual</h1>
   <div class="form-group">
     <label>Docente</label>
     <select id="selDocente"><option value="">Selecciona docente...</option></select>
@@ -339,12 +165,11 @@ body {
   </div>
   <div class="form-group">
     <label>Nombre de la sesión</label>
-    <input type="text" id="nombreSesion" placeholder="Ej: Clase matemáticas 15-abril">
+    <input type="text" id="nombreSesion" placeholder="Ej: Trabajo grupal 15-abril">
   </div>
   <button class="btn-primary" id="btnIniciar">Iniciar sesión</button>
 </div>
 
-<!-- Pantalla principal -->
 <div id="pantallaPrincipal">
   <div class="header-bar">
     <div>
@@ -353,26 +178,18 @@ body {
     </div>
     <div>
       <button class="btn-small" id="btnModoOscuro">🌙 Modo</button>
-      <button class="btn-small btn-danger" id="btnCerrarSesion">Cerrar y enviar</button>
+      <button class="btn-small btn-danger" id="btnCerrarSesion">💾 Cerrar y Guardar</button>
     </div>
   </div>
 
   <div id="areaProyeccion"></div>
-
-  <div id="panelControl">
-    <h3>Panel de control (registra acciones)</h3>
-    <div class="acciones-masivas">
-      <button class="btn-masivo mas" id="btnMasTodos" disabled>+1 a seleccionados</button>
-      <button class="btn-masivo menos" id="btnMenosTodos" disabled>-1 a seleccionados</button>
-    </div>
-    <div id="listaControl"></div>
-  </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-const WEBHOOK = "https://script.google.com/macros/s/AKfycbwx6k9mYkO2H2sQDIgoRKFNhUhc9_ny8YjoJv1X6cmX6sovrhMkQtZpRrbC6BtJUoHl2A/exec"; // REEMPLAZAR
+// ✅ URL YA INTEGRADA
+const WEBHOOK = "https://script.google.com/macros/s/AKfycbwx6k9mYkO2H2sQDIgoRKFNhUhc9_ny8YjoJv1X6cmX6sovrhMkQtZpRrbC6BtJUoHl2A/exec";
 const CURSOS = ["3°A","3°B","3°C","4°A","4°B","4°C","5°A","5°B","5°C","6°A","6°B","6°C","7°A","7°B","7°C","8°A","8°B","8°C","I°A","I°B","I°C","II°A","II°B","II°C","III°A","III°B","III°C","IV°A","IV°B","IV°C"];
 
 const POSICION_INICIAL = 4;
@@ -380,7 +197,7 @@ const POSICION_MAX = 8;
 const POSICION_MIN = 0;
 
 let estudiantes = [];
-let estado = {}; // { id: { posicion, facilita, interfiere, historial: [] } }
+let estado = {}; 
 let docenteActual = '', cursoActual = '', nombreSesionActual = '';
 
 const selDocente = document.getElementById('selDocente');
@@ -390,7 +207,6 @@ const btnIniciar = document.getElementById('btnIniciar');
 const pantallaInicio = document.getElementById('pantallaInicio');
 const pantallaPrincipal = document.getElementById('pantallaPrincipal');
 const areaProyeccion = document.getElementById('areaProyeccion');
-const listaControl = document.getElementById('listaControl');
 const toast = document.getElementById('toast');
 
 function showToast(msg, tipo = '') {
@@ -399,7 +215,6 @@ function showToast(msg, tipo = '') {
   setTimeout(() => toast.className = '', 2500);
 }
 
-// Cargar docentes
 async function cargarDocentes() {
   try {
     const r = await fetch(WEBHOOK + "?action=getDocentes&t=" + Date.now());
@@ -415,14 +230,12 @@ async function cargarDocentes() {
 }
 cargarDocentes();
 
-// Cargar cursos
 CURSOS.forEach(c => {
   const o = document.createElement("option");
   o.value = c; o.textContent = c;
   selCurso.appendChild(o);
 });
 
-// Iniciar sesión
 btnIniciar.addEventListener('click', async () => {
   const docente = selDocente.value;
   const curso = selCurso.value;
@@ -450,12 +263,7 @@ btnIniciar.addEventListener('click', async () => {
     estudiantes = d.estudiantes.map(e => ({ id: e.id, nombre: String(e.nombre).trim() }));
     estado = {};
     estudiantes.forEach(est => {
-      estado[est.id] = {
-        posicion: POSICION_INICIAL,
-        facilita: 0,
-        interfiere: 0,
-        historial: []
-      };
+      estado[est.id] = { posicion: POSICION_INICIAL, facilita: 0, interfiere: 0, historial: [] };
     });
     
     pantallaInicio.style.display = 'none';
@@ -464,87 +272,65 @@ btnIniciar.addEventListener('click', async () => {
     document.getElementById('infoSesion').textContent = `${docente} • ${curso} • ${estudiantes.length} estudiantes`;
     
     renderProyeccion();
-    renderControl();
-    showToast('Sesión iniciada', 'ok');
+    showToast('Sesión iniciada. Todos parten en el centro.', 'ok');
   } catch(e) {
     showToast('Error al cargar estudiantes', 'error');
   }
 });
 
-// Renderizar área de proyección
 function renderProyeccion() {
   areaProyeccion.innerHTML = estudiantes.map(est => {
     const estEstado = estado[est.id];
     const posicion = estEstado.posicion;
     const alcanzoMeta = posicion === POSICION_MAX;
-    const porcentaje = (posicion / POSICION_MAX) * 100;
+    
+    // Fórmula robusta: 5% para el extremo izquierdo, 95% para el derecho
+    const leftPercent = 5 + (posicion / POSICION_MAX) * 90;
     
     return `
       <div class="fila-estudiante">
-        <div class="nombre-estudiante">${est.nombre}</div>
-        <div class="camino">
+        <div class="nombre-estudiante">${est.id}. ${est.nombre}</div>
+        <div class="camino-container">
           <div class="camino-linea"></div>
-          <div class="camino-puntos">
+          <div class="camino-marcas">
             ${Array.from({length: POSICION_MAX + 1}, (_, i) => 
-              `<div class="camino-punto ${i <= posicion ? 'activo' : ''}"></div>`
+              `<div class="marca ${i <= posicion ? 'activo' : ''}"></div>`
             ).join('')}
           </div>
           <div class="icono-extremo icono-alerta">️</div>
           <div class="icono-extremo icono-meta">️</div>
-          <div class="personaje" style="left: calc(30px + ${porcentaje}% * (100% - 60px) / 100)">
+          <div class="personaje" style="left: ${leftPercent}%">
             🧍
             ${alcanzoMeta ? '<span class="estrella">⭐</span>' : ''}
           </div>
         </div>
-        <div class="resultado-cell ${alcanzoMeta ? 'meta-alcanzada' : ''}">
-          ${alcanzoMeta ? '⭐' : '—'}
+        <div class="controles">
+          <button class="btn-accion btn-deshacer" onclick="deshacer(${est.id})" ${estEstado.historial.length === 0 ? 'disabled' : ''} title="Deshacer">↩</button>
+          <button class="btn-accion btn-menos" onclick="moverEstudiante(${est.id}, -1)" title="Interfiere">−</button>
+          <button class="btn-accion btn-mas" onclick="moverEstudiante(${est.id}, 1)" title="Facilita">+</button>
         </div>
       </div>
     `;
   }).join('');
 }
 
-// Renderizar panel de control
-function renderControl() {
-  listaControl.innerHTML = estudiantes.map(est => {
-    const estEstado = estado[est.id];
-    return `
-      <div class="control-estudiante">
-        <input type="checkbox" class="checkbox-rapido" data-id="${est.id}" onchange="actualizarBotonesMasivos()">
-        <div class="nombre">${est.nombre}</div>
-        <div class="posicion">Pos: ${estEstado.posicion}</div>
-        <button class="btn-accion btn-menos" onclick="moverEstudiante(${est.id}, -1)">−</button>
-        <button class="btn-accion btn-mas" onclick="moverEstudiante(${est.id}, 1)">+</button>
-        <button class="btn-accion btn-deshacer" onclick="deshacer(${est.id})" ${estEstado.historial.length === 0 ? 'disabled' : ''}>↩</button>
-      </div>
-    `;
-  }).join('');
-}
-
-// Mover estudiante
 function moverEstudiante(id, delta) {
   const estEstado = estado[id];
   const nuevaPosicion = estEstado.posicion + delta;
   
   if (nuevaPosicion < POSICION_MIN || nuevaPosicion > POSICION_MAX) {
-    showToast('Límite alcanzado', 'error');
+    showToast(nuevaPosicion > POSICION_MAX ? '¡Ya alcanzó la meta!' : 'Límite mínimo alcanzado', 'error');
     return;
   }
   
-  estEstado.historial.push({
-    posicionAnterior: estEstado.posicion,
-    accion: delta > 0 ? 'facilita' : 'interfiere'
-  });
-  
+  estEstado.historial.push({ posicionAnterior: estEstado.posicion, accion: delta > 0 ? 'facilita' : 'interfiere' });
   estEstado.posicion = nuevaPosicion;
   if (delta > 0) estEstado.facilita++;
   else estEstado.interfiere++;
   
   renderProyeccion();
-  renderControl();
 }
 
-// Deshacer último movimiento
 function deshacer(id) {
   const estEstado = estado[id];
   if (estEstado.historial.length === 0) return;
@@ -555,47 +341,19 @@ function deshacer(id) {
   else estEstado.interfiere--;
   
   renderProyeccion();
-  renderControl();
-  showToast('Movimiento deshecho', 'ok');
+  showToast('Último movimiento deshecho', 'ok');
 }
 
-// Acciones masivas
-function actualizarBotonesMasivos() {
-  const seleccionados = document.querySelectorAll('.checkbox-rapido:checked').length;
-  document.getElementById('btnMasTodos').disabled = seleccionados === 0;
-  document.getElementById('btnMenosTodos').disabled = seleccionados === 0;
-}
-
-document.getElementById('btnMasTodos').addEventListener('click', () => {
-  const seleccionados = document.querySelectorAll('.checkbox-rapido:checked');
-  seleccionados.forEach(cb => moverEstudiante(Number(cb.dataset.id), 1));
-  seleccionados.forEach(cb => cb.checked = false);
-  actualizarBotonesMasivos();
-  showToast(`${seleccionados.length} estudiantes avanzaron`, 'ok');
-});
-
-document.getElementById('btnMenosTodos').addEventListener('click', () => {
-  const seleccionados = document.querySelectorAll('.checkbox-rapido:checked');
-  seleccionados.forEach(cb => moverEstudiante(Number(cb.dataset.id), -1));
-  seleccionados.forEach(cb => cb.checked = false);
-  actualizarBotonesMasivos();
-  showToast(`${seleccionados.length} estudiantes retrocedieron`, 'ok');
-});
-
-// Cerrar sesión
 document.getElementById('btnCerrarSesion').addEventListener('click', async () => {
-  if (!confirm('¿Cerrar sesión y enviar datos?')) return;
+  if (!confirm('¿Cerrar sesión y enviar los datos al Sheet?')) return;
   
   const datos = {
     docente: docenteActual,
     curso: cursoActual,
     nombreSesion: nombreSesionActual,
     estudiantes: estudiantes.map(est => ({
-      id: est.id,
-      nombre: est.nombre,
-      posicion: estado[est.id].posicion,
-      facilita: estado[est.id].facilita,
-      interfiere: estado[est.id].interfiere,
+      id: est.id, nombre: est.nombre, posicion: estado[est.id].posicion,
+      facilita: estado[est.id].facilita, interfiere: estado[est.id].interfiere,
       alcanzoMeta: estado[est.id].posicion === POSICION_MAX
     }))
   };
@@ -608,28 +366,26 @@ document.getElementById('btnCerrarSesion').addEventListener('click', async () =>
     });
     
     if (res.ok) {
-      showToast('Sesión guardada correctamente', 'ok');
+      showToast('✅ Sesión guardada correctamente', 'ok');
       setTimeout(() => location.reload(), 1500);
     } else {
-      showToast('Error al guardar', 'error');
+      showToast('Error al guardar en el Sheet', 'error');
     }
   } catch(e) {
     showToast('Error de conexión', 'error');
   }
 });
 
-// Modo oscuro/claro
 document.getElementById('btnModoOscuro').addEventListener('click', () => {
   document.body.classList.toggle('light-mode');
   const esClaro = document.body.classList.contains('light-mode');
-  document.getElementById('btnModoOscuro').textContent = esClaro ? '☀️ Modo' : '🌙 Modo';
+  document.getElementById('btnModoOscuro').textContent = esClaro ? '☀️ Claro' : '🌙 Oscuro';
   localStorage.setItem('modoOscuro', !esClaro);
 });
 
-// Cargar preferencia de modo
 if (localStorage.getItem('modoOscuro') === 'false') {
   document.body.classList.add('light-mode');
-  document.getElementById('btnModoOscuro').textContent = '☀️ Modo';
+  document.getElementById('btnModoOscuro').textContent = '☀️ Claro';
 }
 </script>
 </body>
