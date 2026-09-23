@@ -17,137 +17,105 @@ body.light-mode {
   --muted: #64748b; --border: #cbd5e1; --path: #cbd5e1; --path-active: #3b82f6;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--txt); height: 100vh; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s, color 0.3s; }
+body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--txt); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
 /* Pantalla de inicio */
-#pantallaInicio { max-width: 500px; margin: 10vh auto; padding: 32px; background: var(--panel); border-radius: 16px; border: 1px solid var(--border); text-align: center; }
-#pantallaInicio h1 { font-size: 22px; margin-bottom: 24px; }
-.form-group { margin-bottom: 16px; text-align: left; }
-.form-group label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
-.form-group select, .form-group input { width: 100%; height: 44px; padding: 0 14px; background: var(--input); color: var(--txt); border: 1px solid var(--border); border-radius: 8px; font-size: 15px; }
-.btn-primary { width: 100%; height: 48px; background: var(--btn); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; }
-.btn-primary:hover { opacity: 0.9; }
+#pantallaInicio { max-width: 450px; margin: 15vh auto; padding: 24px; background: var(--panel); border-radius: 12px; border: 1px solid var(--border); text-align: center; }
+#pantallaInicio h1 { font-size: 20px; margin-bottom: 20px; }
+.form-group { margin-bottom: 14px; text-align: left; }
+.form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; font-weight: 600; }
+.form-group select, .form-group input { width: 100%; height: 38px; padding: 0 10px; background: var(--input); color: var(--txt); border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+.btn-primary { width: 100%; height: 42px; background: var(--btn); color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; }
 
 /* Pantalla principal */
 #pantallaPrincipal { display: none; height: 100vh; flex-direction: column; }
 #pantallaPrincipal.active { display: flex; }
 
-.header-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: var(--panel); border-bottom: 1px solid var(--border); flex-shrink: 0; }
-.header-bar h2 { font-size: 18px; font-weight: 700; }
-.header-bar .info { font-size: 14px; color: var(--muted); margin-top: 2px; }
-.btn-small { padding: 8px 16px; background: var(--input); color: var(--txt); border: 1px solid var(--border); border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; margin-left: 8px; }
-.btn-small:hover { opacity: 0.8; }
+.header-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--panel); border-bottom: 1px solid var(--border); flex-shrink: 0; flex-wrap: wrap; gap: 8px; }
+.header-bar h2 { font-size: 16px; font-weight: 700; }
+.header-bar .info { font-size: 12px; color: var(--muted); }
+.header-controls { display: flex; align-items: center; gap: 8px; }
+select.modo-select { height: 34px; padding: 0 8px; background: var(--input); color: var(--txt); border: 1px solid var(--border); border-radius: 6px; font-size: 13px; }
+.btn-small { padding: 6px 12px; background: var(--input); color: var(--txt); border: 1px solid var(--border); border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; }
 .btn-danger { background: var(--danger); color: white; border: none; }
 
-/* Área de proyección (2 columnas para ver todos) */
+/* Barra de acciones masivas */
+.bulk-bar {
+  display: flex; align-items: center; gap: 12px; padding: 8px 16px;
+  background: rgba(59, 130, 246, 0.1); border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.bulk-bar span { font-size: 13px; font-weight: 600; color: var(--txt); }
+.btn-bulk {
+  padding: 6px 14px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; color: white;
+}
+.btn-bulk.mas { background: var(--success); }
+.btn-bulk.menos { background: var(--danger); }
+.btn-bulk:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Área de proyección compacta (2 columnas) */
 #areaProyeccion {
-  flex: 1;
-  padding: 16px 24px;
-  overflow-y: auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 2 columnas para aprovechar TV */
-  gap: 8px 32px;
-  align-content: start;
+  flex: 1; padding: 12px 16px; overflow-y: auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; align-content: start;
 }
 
 .fila-estudiante {
   display: grid;
-  grid-template-columns: 160px 1fr 110px;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  background: var(--panel);
-  border-radius: 8px;
-  border: 1px solid var(--border);
+  grid-template-columns: 24px 90px 1fr 85px 50px; /* Check, Nombre, Camino, Controles, Resultado */
+  align-items: center; gap: 8px;
+  padding: 6px 8px; background: var(--panel); border-radius: 6px; border: 1px solid var(--border);
 }
 
-.nombre-estudiante { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.check-bulk { width: 16px; height: 16px; cursor: pointer; accent-color: var(--btn); }
+.nombre-estudiante { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Camino visual robusto */
-.camino-container {
-  position: relative;
-  height: 36px;
-  display: flex;
-  align-items: center;
-}
-.camino-linea {
-  position: absolute;
-  left: 15px;
-  right: 15px;
-  height: 2px;
-  background: var(--path);
-}
-.camino-marcas {
-  position: absolute;
-  left: 15px;
-  right: 15px;
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-}
-.marca {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--path);
-  margin-top: 15px;
-  transition: background 0.3s;
-}
-.marca.activo { background: var(--path-active); box-shadow: 0 0 6px var(--path-active); }
+/* Camino visual ROBUSTO */
+.camino-container { position: relative; height: 28px; display: flex; align-items: center; }
+.camino-linea { position: absolute; left: 12px; right: 12px; height: 2px; background: var(--path); }
+.camino-marcas { position: absolute; left: 12px; right: 12px; height: 100%; display: flex; justify-content: space-between; }
+.marca { width: 4px; height: 4px; border-radius: 50%; background: var(--path); margin-top: 12px; transition: background 0.3s; }
+.marca.activo { background: var(--path-active); box-shadow: 0 0 4px var(--path-active); }
 
-.icono-extremo { position: absolute; top: 50%; transform: translateY(-50%); font-size: 22px; z-index: 2; }
-.icono-alerta { left: -5px; }
-.icono-meta { right: -5px; }
+.icono-extremo { position: absolute; top: 50%; transform: translateY(-50%); font-size: 18px; z-index: 2; line-height: 1; }
+.icono-alerta { left: -4px; }
+.icono-meta { right: -4px; }
 
 .personaje {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 28px;
-  z-index: 10;
-  /* Fórmula robusta: 5% a 95% del ancho */
-  transition: left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  position: absolute; top: 50%; transform: translate(-50%, -50%);
+  font-size: 22px; z-index: 10; transition: left 0.3s ease-out;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
 }
 .estrella {
-  position: absolute;
-  top: -18px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 18px;
-  animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.8));
+  position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+  font-size: 14px; animation: pop 0.3s ease-out;
 }
 @keyframes pop { 0% { transform: translateX(-50%) scale(0); } 100% { transform: translateX(-50%) scale(1); } }
 
-/* Controles en la misma fila */
-.controles { display: flex; gap: 6px; justify-content: flex-end; }
+.controles { display: flex; gap: 4px; justify-content: flex-end; }
 .btn-accion {
-  width: 32px; height: 32px; border: none; border-radius: 6px;
-  font-size: 16px; font-weight: 700; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: transform 0.1s;
+  width: 26px; height: 26px; border: none; border-radius: 4px;
+  font-size: 14px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 .btn-accion:active { transform: scale(0.9); }
 .btn-mas { background: var(--success); color: white; }
 .btn-menos { background: var(--danger); color: white; }
-.btn-deshacer { background: var(--warning); color: #000; font-size: 14px; width: 32px; }
+.btn-deshacer { background: var(--warning); color: #000; font-size: 12px; }
 .btn-accion:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.resultado-cell { text-align: center; font-size: 14px; font-weight: 700; color: var(--warning); }
 
 /* Toast */
 #toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
-  background: var(--panel); color: var(--txt); padding: 12px 24px; border-radius: 8px;
-  border: 1px solid var(--border); font-size: 15px; font-weight: 600;
-  opacity: 0; transition: all 0.3s; z-index: 1000; pointer-events: none;
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: var(--panel); color: var(--txt); padding: 10px 20px; border-radius: 6px;
+  border: 1px solid var(--border); font-size: 14px; font-weight: 600; opacity: 0; transition: all 0.3s; z-index: 1000;
 }
 #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 #toast.ok { border-color: var(--success); color: var(--success); }
 #toast.error { border-color: var(--danger); color: var(--danger); }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
   #areaProyeccion { grid-template-columns: 1fr; }
-  .fila-estudiante { grid-template-columns: 120px 1fr 100px; }
+  .fila-estudiante { grid-template-columns: 24px 80px 1fr 85px 40px; }
 }
 </style>
 </head>
@@ -176,10 +144,21 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
       <h2 id="tituloSesion">Sesión</h2>
       <div class="info" id="infoSesion"></div>
     </div>
-    <div>
-      <button class="btn-small" id="btnModoOscuro">🌙 Modo</button>
-      <button class="btn-small btn-danger" id="btnCerrarSesion">💾 Cerrar y Guardar</button>
+    <div class="header-controls">
+      <select id="modoResultado" class="modo-select">
+        <option value="visual">Solo Visual</option>
+        <option value="decima">Décima (✓/—)</option>
+        <option value="nota">Nota (1.0 - 7.0)</option>
+      </select>
+      <button class="btn-small" id="btnModoOscuro">🌙</button>
+      <button class="btn-small btn-danger" id="btnCerrarSesion">💾 Guardar</button>
     </div>
+  </div>
+
+  <div class="bulk-bar">
+    <span>Acciones masivas:</span>
+    <button class="btn-bulk mas" id="btnMasBulk" disabled>✅ +1 a seleccionados</button>
+    <button class="btn-bulk menos" id="btnMenosBulk" disabled>❌ -1 a seleccionados</button>
   </div>
 
   <div id="areaProyeccion"></div>
@@ -188,7 +167,6 @@ body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg);
 <div id="toast"></div>
 
 <script>
-// ✅ URL YA INTEGRADA
 const WEBHOOK = "https://script.google.com/macros/s/AKfycbwx6k9mYkO2H2sQDIgoRKFNhUhc9_ny8YjoJv1X6cmX6sovrhMkQtZpRrbC6BtJUoHl2A/exec";
 const CURSOS = ["3°A","3°B","3°C","4°A","4°B","4°C","5°A","5°B","5°C","6°A","6°B","6°C","7°A","7°B","7°C","8°A","8°B","8°C","I°A","I°B","I°C","II°A","II°B","II°C","III°A","III°B","III°C","IV°A","IV°B","IV°C"];
 
@@ -204,12 +182,10 @@ const selDocente = document.getElementById('selDocente');
 const selCurso = document.getElementById('selCurso');
 const nombreSesionInput = document.getElementById('nombreSesion');
 const btnIniciar = document.getElementById('btnIniciar');
-const pantallaInicio = document.getElementById('pantallaInicio');
-const pantallaPrincipal = document.getElementById('pantallaPrincipal');
-const areaProyeccion = document.getElementById('areaProyeccion');
-const toast = document.getElementById('toast');
+const modoResultadoSelect = document.getElementById('modoResultado');
 
 function showToast(msg, tipo = '') {
+  const toast = document.getElementById('toast');
   toast.textContent = msg;
   toast.className = 'show ' + tipo;
   setTimeout(() => toast.className = '', 2500);
@@ -241,24 +217,16 @@ btnIniciar.addEventListener('click', async () => {
   const curso = selCurso.value;
   const nombre = nombreSesionInput.value.trim();
   
-  if (!docente || !curso || !nombre) {
-    showToast('Completa todos los campos', 'error');
-    return;
-  }
+  if (!docente || !curso || !nombre) { showToast('Completa todos los campos', 'error'); return; }
   
-  docenteActual = docente;
-  cursoActual = curso;
-  nombreSesionActual = nombre;
+  docenteActual = docente; cursoActual = curso; nombreSesionActual = nombre;
   
   try {
     const url = WEBHOOK + "?action=getEstudiantes&curso=" + encodeURIComponent(curso) + "&t=" + Date.now();
     const r = await fetch(url, { cache: "no-store" });
     const d = await r.json();
     
-    if (!d.success || !d.estudiantes?.length) {
-      showToast('No hay estudiantes en este curso', 'error');
-      return;
-    }
+    if (!d.success || !d.estudiantes?.length) { showToast('No hay estudiantes', 'error'); return; }
     
     estudiantes = d.estudiantes.map(e => ({ id: e.id, nombre: String(e.nombre).trim() }));
     estado = {};
@@ -266,127 +234,77 @@ btnIniciar.addEventListener('click', async () => {
       estado[est.id] = { posicion: POSICION_INICIAL, facilita: 0, interfiere: 0, historial: [] };
     });
     
-    pantallaInicio.style.display = 'none';
-    pantallaPrincipal.classList.add('active');
+    document.getElementById('pantallaInicio').style.display = 'none';
+    document.getElementById('pantallaPrincipal').classList.add('active');
     document.getElementById('tituloSesion').textContent = nombre;
-    document.getElementById('infoSesion').textContent = `${docente} • ${curso} • ${estudiantes.length} estudiantes`;
+    document.getElementById('infoSesion').textContent = `${docente} • ${curso} • ${estudiantes.length} est.`;
     
     renderProyeccion();
-    showToast('Sesión iniciada. Todos parten en el centro.', 'ok');
-  } catch(e) {
-    showToast('Error al cargar estudiantes', 'error');
-  }
+    showToast('Sesión iniciada', 'ok');
+  } catch(e) { showToast('Error al cargar', 'error'); }
 });
 
+function calcularResultado(posicion) {
+  const modo = modoResultadoSelect.value;
+  if (modo === 'visual') return '—';
+  if (modo === 'decima') return posicion === POSICION_MAX ? '✓' : '—';
+  if (modo === 'nota') {
+    // Fórmula: Pos 0 = 1.0, Pos 8 = 7.0
+    return (1 + (posicion / POSICION_MAX) * 6).toFixed(1);
+  }
+  return '—';
+}
+
 function renderProyeccion() {
-  areaProyeccion.innerHTML = estudiantes.map(est => {
+  const modo = modoResultadoSelect.value;
+  document.getElementById('areaProyeccion').innerHTML = estudiantes.map(est => {
     const estEstado = estado[est.id];
     const posicion = estEstado.posicion;
     const alcanzoMeta = posicion === POSICION_MAX;
     
-    // Fórmula robusta: 5% para el extremo izquierdo, 95% para el derecho
+    // Fórmula robusta: 5% a 95% del ancho del contenedor
     const leftPercent = 5 + (posicion / POSICION_MAX) * 90;
+    const resultado = calcularResultado(posicion);
     
     return `
       <div class="fila-estudiante">
+        <input type="checkbox" class="check-bulk" data-id="${est.id}" onchange="actualizarBulk()">
         <div class="nombre-estudiante">${est.id}. ${est.nombre}</div>
         <div class="camino-container">
           <div class="camino-linea"></div>
           <div class="camino-marcas">
-            ${Array.from({length: POSICION_MAX + 1}, (_, i) => 
-              `<div class="marca ${i <= posicion ? 'activo' : ''}"></div>`
-            ).join('')}
+            ${Array.from({length: POSICION_MAX + 1}, (_, i) => `<div class="marca ${i <= posicion ? 'activo' : ''}"></div>`).join('')}
           </div>
-          <div class="icono-extremo icono-alerta">️</div>
-          <div class="icono-extremo icono-meta">️</div>
+          <div class="icono-extremo icono-alerta">⚠️</div>
+          <div class="icono-extremo icono-meta">🏔️</div>
           <div class="personaje" style="left: ${leftPercent}%">
             🧍
             ${alcanzoMeta ? '<span class="estrella">⭐</span>' : ''}
           </div>
         </div>
         <div class="controles">
-          <button class="btn-accion btn-deshacer" onclick="deshacer(${est.id})" ${estEstado.historial.length === 0 ? 'disabled' : ''} title="Deshacer">↩</button>
-          <button class="btn-accion btn-menos" onclick="moverEstudiante(${est.id}, -1)" title="Interfiere">−</button>
-          <button class="btn-accion btn-mas" onclick="moverEstudiante(${est.id}, 1)" title="Facilita">+</button>
+          <button class="btn-accion btn-deshacer" onclick="deshacer(${est.id})" ${estEstado.historial.length === 0 ? 'disabled' : ''}>↩</button>
+          <button class="btn-accion btn-menos" onclick="mover(${est.id}, -1)">−</button>
+          <button class="btn-accion btn-mas" onclick="mover(${est.id}, 1)">+</button>
         </div>
+        <div class="resultado-cell">${resultado}</div>
       </div>
     `;
   }).join('');
 }
 
-function moverEstudiante(id, delta) {
+function mover(id, delta) {
   const estEstado = estado[id];
   const nuevaPosicion = estEstado.posicion + delta;
+  if (nuevaPosicion < POSICION_MIN || nuevaPosicion > POSICION_MAX) return;
   
-  if (nuevaPosicion < POSICION_MIN || nuevaPosicion > POSICION_MAX) {
-    showToast(nuevaPosicion > POSICION_MAX ? '¡Ya alcanzó la meta!' : 'Límite mínimo alcanzado', 'error');
-    return;
-  }
-  
-  estEstado.historial.push({ posicionAnterior: estEstado.posicion, accion: delta > 0 ? 'facilita' : 'interfiere' });
+  estEstado.historial.push({ posAnt: estEstado.posicion, accion: delta > 0 ? 'facilita' : 'interfiere' });
   estEstado.posicion = nuevaPosicion;
-  if (delta > 0) estEstado.facilita++;
-  else estEstado.interfiere++;
+  if (delta > 0) estEstado.facilita++; else estEstado.interfiere++;
   
   renderProyeccion();
 }
 
 function deshacer(id) {
   const estEstado = estado[id];
-  if (estEstado.historial.length === 0) return;
-  
-  const ultimo = estEstado.historial.pop();
-  estEstado.posicion = ultimo.posicionAnterior;
-  if (ultimo.accion === 'facilita') estEstado.facilita--;
-  else estEstado.interfiere--;
-  
-  renderProyeccion();
-  showToast('Último movimiento deshecho', 'ok');
-}
-
-document.getElementById('btnCerrarSesion').addEventListener('click', async () => {
-  if (!confirm('¿Cerrar sesión y enviar los datos al Sheet?')) return;
-  
-  const datos = {
-    docente: docenteActual,
-    curso: cursoActual,
-    nombreSesion: nombreSesionActual,
-    estudiantes: estudiantes.map(est => ({
-      id: est.id, nombre: est.nombre, posicion: estado[est.id].posicion,
-      facilita: estado[est.id].facilita, interfiere: estado[est.id].interfiere,
-      alcanzoMeta: estado[est.id].posicion === POSICION_MAX
-    }))
-  };
-  
-  try {
-    const res = await fetch(WEBHOOK, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ data: JSON.stringify(datos) })
-    });
-    
-    if (res.ok) {
-      showToast('✅ Sesión guardada correctamente', 'ok');
-      setTimeout(() => location.reload(), 1500);
-    } else {
-      showToast('Error al guardar en el Sheet', 'error');
-    }
-  } catch(e) {
-    showToast('Error de conexión', 'error');
-  }
-});
-
-document.getElementById('btnModoOscuro').addEventListener('click', () => {
-  document.body.classList.toggle('light-mode');
-  const esClaro = document.body.classList.contains('light-mode');
-  document.getElementById('btnModoOscuro').textContent = esClaro ? '☀️ Claro' : '🌙 Oscuro';
-  localStorage.setItem('modoOscuro', !esClaro);
-});
-
-if (localStorage.getItem('modoOscuro') === 'false') {
-  document.body.classList.add('light-mode');
-  document.getElementById('btnModoOscuro').textContent = '☀️ Claro';
-}
-</script>
-</body>
-</html>
+  if (estEstado.historial
